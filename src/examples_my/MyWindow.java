@@ -145,7 +145,7 @@ public class MyWindow extends JFrame {
                     // Инициализация клиента
                     connect.init();
 
-                    new Thread(new ClientReciveDataThread(connect, chatWindow, userList)).start();
+                    new Thread(new ClientReciveDataThread(connect, chatWindow, userList, model)).start();
                     //если в пришедшем Ответе есть новый пользователь -
                     // - то добавляем его в userList
 

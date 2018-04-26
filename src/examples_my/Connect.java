@@ -55,27 +55,24 @@ public class Connect {
     }
 
     // получаем данные с сокета
-    public void recive(JTextArea inputShow, JList<String> jList) throws IOException {
+    public void recive(JTextArea inputShow, JList<String> jList, DefaultListModel model) throws IOException {
         while (true) {
             if ((reciveString = br.readLine()) != null) {
                 // Получаем ответ от сервера
 
                 // reciveString - как-то вывести в inputShow
                 fillInputShow(inputShow, reciveString, this.portNumber, this.host);
-                //если в пришедшем Ответе есть новый пользователь -
-                // - то добавляем его в userList
-                int firstNumberChar = reciveString.indexOf("<user><message>");
-                String user = reciveString.substring(1, firstNumberChar);
-                Component[] components = jList.getComponents();
-                boolean needAddUser;
-                for (Component component : components) {
-                    if (component.equals(user)) {
-                        needAddUser = true;
-                    }
-                }
-                //return needAddUser
 
-                //userList.add("user", String user );
+                //получить пользователя
+                int firstNumberChar = reciveString.indexOf("<user><message>");
+                if (firstNumberChar > 0) {
+                    String user = reciveString.substring(1, firstNumberChar);
+                    //если в пришедшем Ответе есть новый пользователь -
+                    // - то добавляем его в userList
+                    model.addElement(user);
+
+                }
+
             }
         }
     }
