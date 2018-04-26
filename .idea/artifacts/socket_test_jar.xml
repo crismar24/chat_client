@@ -2,7 +2,7 @@
   <artifact type="jar" name="socket_test:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/socket_test_jar</output-path>
     <root id="archive" name="socket_test.jar">
-      <element id="module-output" name="socket_test" />
+      <element id="module-output" name="client" />
     </root>
   </artifact>
 </component>
