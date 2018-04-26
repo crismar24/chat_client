@@ -56,10 +56,6 @@ public class MyWindow extends JFrame {
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridLayout(1,2,5,5));
         centerPanel.setPreferredSize(new Dimension(330, 450));
-//        Label labelUserList = new Label("Users list");
-//        labelUserList.setBackground(Color.LIGHT_GRAY);
-//        labelUserList.setPreferredSize(new Dimension(330,30));
-//        centerPanel.add(labelUserList, BorderLayout.EAST);
         JScrollPane scrollPanelChatWindow = new JScrollPane(chatWindow);
         scrollPanelChatWindow.createVerticalScrollBar();
         scrollPanelChatWindow.setPreferredSize(new Dimension(330,300));
