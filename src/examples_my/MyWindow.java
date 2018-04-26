@@ -64,9 +64,9 @@ public class MyWindow extends JFrame {
         DefaultListModel<String> model = new DefaultListModel<>();
         userList = new JList(model);
         userList.setPreferredSize(new Dimension(330,300));
-        for (int i = 0; i < 25; i++) {
-            model.addElement("192.169.0." + i);
-        }
+//        for (int i = 0; i < 25; i++) {
+//            model.addElement("192.169.0." + i);
+//        }
         JScrollPane scrollPaneluserList = new JScrollPane(userList);
         scrollPaneluserList.createVerticalScrollBar();
         scrollPaneluserList.setPreferredSize(new Dimension(330,300));
@@ -166,7 +166,8 @@ public class MyWindow extends JFrame {
             input.setText("");
         } else {
             try {
-                finalConnect1.sent(input.getText());
+
+                finalConnect1.sent(ipServer + ": "+input.getText());
                 input.setText("");
             } catch (Exception e) {
                 e.printStackTrace();

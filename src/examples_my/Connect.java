@@ -60,18 +60,19 @@ public class Connect {
             if ((reciveString = br.readLine()) != null) {
                 // Получаем ответ от сервера
 
-                // reciveString - как-то вывести в inputShow
-                fillInputShow(inputShow, reciveString, this.portNumber, this.host);
 
                 //получить пользователя
-                int firstNumberChar = reciveString.indexOf("<user><message>");
+                int firstNumberChar = reciveString.indexOf(": ");
                 if (firstNumberChar > 0) {
-                    String user = reciveString.substring(1, firstNumberChar);
+                    String user = reciveString.substring(0, firstNumberChar);
                     //если в пришедшем Ответе есть новый пользователь -
                     // - то добавляем его в userList
-                    model.addElement(user);
+                    model.addElement("\r\n"+user);
 
                 }
+
+                // host+reciveString - вывести в inputShow
+                fillInputShow(inputShow, reciveString, this.portNumber, this.host);
 
             }
         }
@@ -81,7 +82,7 @@ public class Connect {
         String stringInputShow = inputShow.getText();
 
 //        inputShow.append("\r\n" + host + " _ " + portNumber + ": " + reciveString);
-        inputShow.append("\r\n" + "Server " + host + " _ " + portNumber + ": " + reciveString);
+        inputShow.append("\r\n"+ reciveString);
     }
 
     public void checkConnectionServer() {
