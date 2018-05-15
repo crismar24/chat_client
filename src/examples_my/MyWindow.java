@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
+import java.util.HashSet;
 
 public class MyWindow extends JFrame {
 
@@ -18,6 +20,8 @@ public class MyWindow extends JFrame {
     Label labelInput;
     Label labelInputShow;
     JList <String> userList;
+    DefaultListModel<String> modelList;
+    HashSet<String> hashSetUsers;
 
     public MyWindow(Connect connect) throws HeadlessException {
         setTitle("Client");
@@ -96,7 +100,32 @@ public class MyWindow extends JFrame {
         sentButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sentMessage(finalConnect1, input);
+                port = 1777;
+                Connect connect = new Connect(port, ipServer);
+                try {
+                    connect.init();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+
+                String textInput = input.getText().replaceAll("[\\s]{2,}", " ");
+                textInput = textInput.trim();
+                if (textInput.equals("")) {
+                    input.setText("");
+                }
+                try {
+                    connect.sent(ipServer + ": " + textInput);
+                    input.setText("");
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+
+                try {
+                    connect.socket.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                //sentMessage(finalConnect1, input);
             }
         });
 
@@ -105,14 +134,32 @@ public class MyWindow extends JFrame {
                     @Override
                     public void keyTyped(KeyEvent e) {
                         if (e.getKeyChar() == '\n') {
+                            port = 1777;
+                            Connect connect = new Connect(port, ipServer);
+                            try {
+                                connect.init();
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            }
+
                             String textInput = input.getText().replaceAll("[\\s]{2,}", " ");
                             textInput = textInput.trim();
                             if (textInput.equals("")) {
                                 input.setText("");
-                            }else {
-                                sentMessage(finalConnect1, input);
-
                             }
+                            try {
+                                connect.sent(ipServer + ": " + input.getText());
+                                input.setText("");
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
+
+                            try {
+                                connect.socket.close();
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            }
+                            //sentMessage(finalConnect1, input);
                         }
                     }
 
@@ -138,19 +185,18 @@ public class MyWindow extends JFrame {
                     if (connect.socket != null) {
                         connect.socket.close();
                     }
-
+                    port = 1777;
                     ipServer = inputServer.getText();
-                    connect.setHost(inputServer.getText());
+//                    Connect connect = new Connect(port, ipServer);
+//                    connect.init();
+//                    connect.sent("Request of connection of the server");
+//                    connect.socket.close();
 
-                    // Инициализация клиента
-                    connect.init();
+                    Connect connectThread = new Connect(port, ipServer);
+                    connectThread.init();
 
-                    new Thread(new ClientReciveDataThread(connect, chatWindow, userList, model)).start();
-                    //если в пришедшем Ответе есть новый пользователь -
-                    // - то добавляем его в userList
-
-                    connect.sent("Request of connection of the server");
-
+                    // Запускаем отдельный поток постоянно "прослушивать" ip и порт сокета сервера
+                    new Thread(new ClientReciveDataThread(hashSetUsers, modelList, connectThread, chatWindow, userList, model)).start();
                 } catch (Exception e1) {
                     e1.printStackTrace(System.out);
                 }

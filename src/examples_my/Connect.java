@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashSet;
 
 public class Connect {
     // Определяем номер порта, на котором нас ожидает сервер для ответа
@@ -55,30 +56,57 @@ public class Connect {
     }
 
     // получаем данные с сокета
-    public void recive(JTextArea inputShow, JList<String> jList, DefaultListModel model) throws IOException {
+    public void recive(JTextArea inputShow, JList<String> jList, HashSet<String> hashSetUsers, DefaultListModel<String> modelList) throws Exception {
         while (true) {
+            reciveString = null;
             if ((reciveString = br.readLine()) != null) {
                 // Получаем ответ от сервера
+                if (reciveString.contains("- Server correct-")) {
+                    // Посылаем клиенту Положительную проверку на соединение с Сервером
+                    pw.println("- Server correct-");
+                } else {
+                    //получить пользователя
+                    int firstNumberChar = reciveString.indexOf(": ");
+                    if (firstNumberChar > 0) {
+                        String user = reciveString.substring(0, firstNumberChar);
+                        //если в пришедшем Ответе есть новый пользователь -
+                        // - то добавляем его в userList / hashSetUsers
+                        if (!hashSetUsers.contains(user)) {
+                            hashSetUsers.add(user);
+                        }
 
+                        // TODO Сделать - Посылать ответ всем юзерам из hashSetUsers
+                        // Создать класс Connection - объект будет создаваться каждый раз(возможно только для ногового пользователя,единожды) при отправке сообщения
+                        // Отправим всем клиентам по ip сообщение
+                        for (String userSet : hashSetUsers) {
+                            Connect connect = new Connect(1777, userSet);
+                            connect.init();
+                            connect.sent(reciveString);
+                            connect.close();
+                        }
 
-                //получить пользователя
-                int firstNumberChar = reciveString.indexOf(": ");
-                if (firstNumberChar > 0) {
-                    String user = reciveString.substring(0, firstNumberChar);
-                    //если в пришедшем Ответе есть новый пользователь -
-                    // - то добавляем его в userList
-                    model.addElement("\r\n"+user);
+                        //очищаем список пользователей
+                        modelList.clear();
 
+                        //заполняем List на форме всеми уник. пользователями
+                        for (Object userSet : hashSetUsers) {
+                            modelList.addElement(userSet.toString());
+                        }
+                        // Оправим на Табло сервера текст сообщения сервера
+                        fillInputShow(inputShow, reciveString);
+                    }
                 }
-
-                // host+reciveString - вывести в inputShow
-                fillInputShow(inputShow, reciveString, this.portNumber, this.host);
-
             }
         }
     }
 
-    private void fillInputShow(JTextArea inputShow, String reciveString, int portNumber, String host) {
+    private void close() throws IOException {
+        //br.close();
+        pw.close();
+        socket.close();
+    }
+
+    private void fillInputShow(JTextArea inputShow, String reciveString) {
         String stringInputShow = inputShow.getText();
 
 //        inputShow.append("\r\n" + host + " _ " + portNumber + ": " + reciveString);
